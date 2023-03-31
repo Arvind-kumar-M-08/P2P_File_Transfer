@@ -7,7 +7,7 @@ class Peer:
         self.s.connect(('127.0.0.1', server_port))
         self.peer_list = []
 
-        # print("Peer started")
+        print("Peer started")
 
     def join(self):
         # sending HI for new peer
@@ -23,7 +23,7 @@ class Peer:
             message = message[:-1]
             message = message.split(',')
             self.peer_list = message
-                # print(self.peer_list)
+            print(self.peer_list)
     def leave(self):
         print("Sending bye message")
         message = "BYE"

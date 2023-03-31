@@ -10,7 +10,7 @@ stop_flag = threading.Event()
 
 def update_peer():
     while not stop_flag.is_set():
-        print("Updating peer")
+        # print("Updating peer")
         peer.update_peer();
     print("thread end")
 
