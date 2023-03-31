@@ -13,8 +13,16 @@ class Manager:
     def message_from_peer(self):
         pass
 
-    def message_to_peer(self, port_no):
-        pass
+    def message_to_peer(self, conn, message):
+        conn.send(message.encode())
+
+    def add_peer(self, c, port_no):
+        self.peer_list.append((c, port_no))
+        message = ""
+        for _, port in self.peer_list:
+            message += str(port) + ","
+        for conn, _ in self.peer_list:
+            self.message_to_peer(conn, message)
 
     def __del__(self):
         # self.s.shutdown()
