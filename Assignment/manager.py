@@ -91,10 +91,7 @@ def listen_for_connection():
         t.start()    
 
 
-def check_active_peers():
-    while True:
-        sleep(5)
-        manager.check_peer()
+
 try:
     listen_for_connection()
 

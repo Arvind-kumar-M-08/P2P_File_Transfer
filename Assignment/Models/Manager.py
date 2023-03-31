@@ -26,33 +26,7 @@ class Manager:
                 self.message_to_peer(conn, message)
             except:
                 pass
-    
-    def is_client_alive(self, conn):
-        try:
-            conn.sendall("ALIVE_CHECK".encode())
-            conn.settimeout(10)
-            response = conn.recv(1024)
-            return True
-        except socket.timeout:
-            return False
-        except:
-            return False
-        
-    def check_peer(self):
-        isModified = False
-        for peer in self.peer_list:
-            print("checking for ", peer[1])
-
-            if not self.is_client_alive(peer[0]):
                 
-                print("Peer dead at port : ", peer[1])
-                isModified = True
-                self.peer_list.remove(peer)
-        
-        if isModified:
-            self.send_peerlist()
-    
-
     def __del__(self):
         # self.s.shutdown()
         self.s.close()
