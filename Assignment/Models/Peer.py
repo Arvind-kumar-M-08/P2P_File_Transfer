@@ -13,6 +13,7 @@ class Peer:
         # sending HI for new peer
         self.s.send("HI".encode())
 
+    # always checking for active peers
     def update_peer(self):
         while True:
             message = self.s.recv(1024).decode()
