@@ -16,6 +16,7 @@ class Manager:
     def message_to_peer(self, conn, message):
         conn.send(message.encode())
 
+    # Broadcasting peer list
     def send_peerlist(self):
         message = ""
         for _, port in self.peer_list:
@@ -26,11 +27,12 @@ class Manager:
     def add_peer(self, c, port_no):
         self.peer_list.append((c, port_no))
         self.send_peerlist()
+
     
     def is_client_alive(self, conn):
         try:
             conn.sendall("ALIVE_CHECK".encode())
-            conn.settimeout(2)
+            conn.settimeout(5)
             response = conn.recv(1024)
             return True
         except:
@@ -49,6 +51,14 @@ class Manager:
         
         if isModified:
             self.send_peerlist()
+    
+    def remove_peer(self, port_no):
+        for peer in self.peer_list:
+            if peer[1] == port_no:
+                self.peer_list.remove(peer)
+        
+
+        self.send_peerlist()
 
     def __del__(self):
         # self.s.shutdown()
