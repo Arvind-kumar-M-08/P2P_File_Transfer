@@ -17,7 +17,10 @@ class Peer:
         while True:
             message = self.s.recv(1024).decode()
             if len(message):
-                print("Message ", message)
+                message = message[:-1]
+                message = message.split(',')
+                self.peer_list = message
+                print(self.peer_list)
 
     def __del__(self):
         self.s.close()
