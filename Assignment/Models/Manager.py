@@ -22,8 +22,10 @@ class Manager:
         for _, port in self.peer_list:
             message += str(port) + ","
         for conn, _ in self.peer_list:
-            self.message_to_peer(conn, message)
-
+            try:
+                self.message_to_peer(conn, message)
+            except:
+                pass
     
     def is_client_alive(self, conn):
         try:
