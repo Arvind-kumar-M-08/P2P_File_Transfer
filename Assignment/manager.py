@@ -51,7 +51,7 @@ def listen_to_peer(conn, port_no):
                 t = threading.Thread(target=remove_peer, args=(port_no,))
                 t.start()
                 t.join()
-                manager.send_peerlist()
+                # manager.send_peerlist()
                 return
         try:
             conn.settimeout(5)
@@ -74,7 +74,7 @@ def listen_to_peer(conn, port_no):
                 t = threading.Thread(target=remove_peer, args=(port_no,))
                 t.start()
                 t.join()
-                manager.send_peerlist()
+                # manager.send_peerlist()
                 return
         finally:
             is_alive_check = False
@@ -91,7 +91,23 @@ def listen_for_connection():
         t.start()    
 
 
+def is_active_peers_changed():
+    last_checked_time = time()
+    old = [peer[1] for peer in manager.peer_list]
+    while True:
+        if time() - last_checked_time > 5:
+            print("Checking if peers changed")
+            new  = [peer[1] for peer in manager.peer_list]
 
+            if not sorted(old) == sorted(new):
+                print("Peers changed : BROADCASTING")
+                manager.send_peerlist()
+                old = new
+            last_checked_time = time()
+
+
+t = threading.Thread(target=is_active_peers_changed)
+t.start()
 try:
     listen_for_connection()
 
