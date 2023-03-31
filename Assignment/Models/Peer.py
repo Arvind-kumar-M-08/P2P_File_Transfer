@@ -17,7 +17,10 @@ class Peer:
     def update_peer(self):
         while True:
             message = self.s.recv(1024).decode()
-            if len(message):
+            if len(message) > 0:
+                if message == "ALIVE_CHECK":
+                    self.s.send("OK".encode())
+                    continue
                 message = message[:-1]
                 message = message.split(',')
                 self.peer_list = message

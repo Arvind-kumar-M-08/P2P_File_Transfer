@@ -19,9 +19,17 @@ def listen_for_message():
             t = threading.Thread(target=new_peer, args=(c, addr[1], ))
             t.start()
 
+def check_active_peers():
+    while True:
+        sleep(5)
+        print("Checking active peers")
+        manager.check_peer()
 
 try:
+    t = threading.Thread(target=check_active_peers)
+    t.start()
     listen_for_message()
+
 except Exception as e:
     manager.s.close()
 
