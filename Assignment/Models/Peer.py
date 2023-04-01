@@ -1,7 +1,8 @@
 import socket
+import os
 
 class Peer:
-    def __init__(self, port, server_port = 10000):
+    def __init__(self, port, folder, server_port = 10000):
         # s is the server socekt object
         self.s = socket.socket()
         self.s.connect(('127.0.0.1', server_port))
@@ -9,7 +10,14 @@ class Peer:
 
         #port for peer file transfer
         self.port = port
+        self.peerSocket = socket.socket()
+        self.peerSocket.bind(('', port))
+        self.peerSocket.listen(100)
         print("Peer started")
+
+        #data for file request
+        self.file_chunk = {}
+        self.folder = folder
 
     def join(self):
         # sending HI for new peer
@@ -31,6 +39,26 @@ class Peer:
         message = "BYE"
         self.s.send(message.encode())
 
+    def listen_to_peers(self):
+        while True:
+            c, addr = self.peerSocket.accept()
+            message = c.recv(1024).decode()
+            print(message)
+            c.close()
+
+    def ask_a_peer(self, file, port_no):
+        temps = socket.socket()
+        temps.connect(('127.0.0.1', port_no))
+        temps.send(("NEED "+ file).encode())
+        message = temps.recv(1024).decode()
+        
+        temps.close()
+
+    def check_if_file_exist(self, file):
+        if file in os.path.isfile(self.folder + file):
+            return True
+        return False
+    
     def __del__(self):
         # Closing the connection
         self.s.close()
