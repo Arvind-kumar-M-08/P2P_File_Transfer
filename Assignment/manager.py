@@ -84,12 +84,15 @@ def listen_for_connection():
     while True:
         c, addr = manager.s.accept() 
         print("Conncetion from ", addr[1])
-        message = int(c.recv(1024).decode().split()[1])
-        print("Peer - peer port: ", message)
-        #New peer
-        print("New connection request from port : ",addr[1])
-        t = threading.Thread(target=new_peer, args=(c, addr[1], message,))
-        t.start()    
+        try:
+            message = int(c.recv(1024).decode().split()[1])
+            print("Peer - peer port: ", message)
+            #New peer
+            print("New connection request from port : ",addr[1])
+            t = threading.Thread(target=new_peer, args=(c, addr[1], message,))
+            t.start()    
+        except:
+            print("Error while adding peer")
 
 
 def is_active_peers_changed():
