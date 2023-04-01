@@ -43,14 +43,48 @@ class Peer:
         while True:
             c, addr = self.peerSocket.accept()
             message = c.recv(1024).decode()
-            print(message)
+            message = message.split(" ")
+            
+            #Asking file chunk
+            if message[0] == "NEED":
+                sending = ""
+                if self.check_if_file_exist(message[1]):
+                    sending = self.has_chunks(message[1])
+                else:
+                    sending = "NO"
+                
+                c.send(sending.encode())
             c.close()
 
+    def has_chunks(self, file):
+        chunk_index = 0
+        message = "YES "
+        with open(self.folder + file, 'rb') as f:
+            # Read the file in 1024-byte chunks
+            while True:
+                chunk = f.read(1024)
+                if not chunk:
+                    break
+                message += str(chunk_index) + ","
+                chunk_index += 1
+                # Process the chunk
+                # print(chunk)
+        return message[:-1]
+
     def ask_a_peer(self, file, port_no):
+        self.file_chunk[port_no] = []
         temps = socket.socket()
         temps.connect(('127.0.0.1', port_no))
         temps.send(("NEED "+ file).encode())
         message = temps.recv(1024).decode()
+        print(message)
+        message = message.split(" ")
+
+        #YES
+        if message[0] == "YES":
+            chunks  = message[1].split(",")
+            for chunk in chunks:
+                self.file_chunk[port_no].append(int(chunk))
         
         temps.close()
 

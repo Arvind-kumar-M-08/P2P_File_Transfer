@@ -2,7 +2,10 @@ from Models.Peer import Peer
 import threading
 import os
 
-peer = Peer(10001, "peer1/")
+port_no = int(input("Enter port number : "))
+name = input("Peer number : ")
+
+peer = Peer(port_no, "peer" + name + "/")
 
 peer.join()
 
@@ -33,6 +36,9 @@ def ask_peers(file):
     # waiting till all threads append chunk info
     for t in threads:
         t.join()
+
+    print("------FILE CHUNKS------")
+    print(peer.file_chunk)
             
 
 t1 = threading.Thread(target=update_peer)
