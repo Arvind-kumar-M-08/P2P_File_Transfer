@@ -22,7 +22,7 @@ class Peer:
                 return
             message = message[:-1]
             message = message.split(',')
-            self.peer_list = message
+            self.peer_list = [int(i) for i in message]
             print(self.peer_list)
     def leave(self):
         print("Sending bye message")
