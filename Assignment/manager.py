@@ -2,6 +2,7 @@ from Models.Manager import Manager
 import threading
 import subprocess
 from time import sleep, time
+import os
 
 manager = Manager(10000)
 
@@ -106,10 +107,14 @@ def is_active_peers_changed():
             last_checked_time = time()
 
 
-t = threading.Thread(target=is_active_peers_changed)
-t.start()
-try:
-    listen_for_connection()
+t1 = threading.Thread(target=is_active_peers_changed)
+t1.start()
+t2 = threading.Thread(target=listen_for_connection)
+t2.start()
 
-except KeyboardInterrupt:
-    manager.s.close()
+while True:
+    action = input("INPUT : ")
+    if action.lower() == "close" or action.lower() == "c":
+        print("Closing Manager")
+        os._exit(0)
+

@@ -19,7 +19,7 @@ t1.start()
 
 while True:
     action = input("INPUT : ")
-    if action.lower() == "close":
+    if action.lower() == "close" or action.lower() == "c":
             print("Closing peer")
             stop_flag.set()
             peer.leave()
