@@ -16,7 +16,7 @@ class Peer:
         print("Peer started")
 
         #data for file request
-        self.file_chunk = {}
+        self.file_chunk = []
         self.folder = folder
 
     def join(self):
@@ -49,7 +49,8 @@ class Peer:
             if message[0] == "NEED":
                 sending = ""
                 if self.check_if_file_exist(message[1]):
-                    sending = self.has_chunks(message[1])
+                    sending = "YES " + str((os.path.getsize(self.folder + message[1]) + 1023)//1024)
+                    # sending = self.has_chunks(message[1])
                 else:
                     sending = "NO"
                 
@@ -72,7 +73,7 @@ class Peer:
         return message[:-1]
 
     def ask_a_peer(self, file, port_no):
-        self.file_chunk[port_no] = []
+        self.file_chunk= []
         temps = socket.socket()
         temps.connect(('127.0.0.1', port_no))
         temps.send(("NEED "+ file).encode())
@@ -82,9 +83,7 @@ class Peer:
 
         #YES
         if message[0] == "YES":
-            chunks  = message[1].split(",")
-            for chunk in chunks:
-                self.file_chunk[port_no].append(int(chunk))
+            self.file_chunk.append(port_no)
         
         temps.close()
 

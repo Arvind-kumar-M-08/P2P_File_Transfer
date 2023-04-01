@@ -25,7 +25,7 @@ def ask_a_peer(file, port_no):
 
 def ask_peers(file):
     print("Request for file : ", file)
-    peer.file_chunk = {}
+    peer.file_chunk = []
     threads = []
     for p in peer.peer_list:
         if p != peer.port:
