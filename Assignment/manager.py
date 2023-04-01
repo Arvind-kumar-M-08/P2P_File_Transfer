@@ -101,7 +101,7 @@ def is_active_peers_changed():
             new  = [peer[1] for peer in manager.peer_list]
 
             if not sorted(old) == sorted(new):
-                print("Peers changed : BROADCASTING")
+                print("Peers changed : Broadcasting")
                 manager.send_peerlist()
                 old = new
             last_checked_time = time()
