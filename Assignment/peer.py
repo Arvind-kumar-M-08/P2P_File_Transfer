@@ -1,7 +1,7 @@
 from Models.Peer import Peer
 import threading
 import os
-
+import time
 port_no = int(input("Enter port number : "))
 name = input("Peer number : ")
 
@@ -46,6 +46,8 @@ def ask_peers(file):
     print(peer.file_chunk)
     print("File chunks : ",peer.file_size)
 
+    time.sleep(3)
+
     chunks_wanted = [i for i in range(peer.file_size)]
     while len(chunks_wanted):
         index = 0
@@ -89,7 +91,7 @@ while True:
         os._exit(0)
         break
     
-    if action.split(" ")[0].lower() == "nned":
+    if action.split(" ")[0].lower() == "need":
         file = action.split(" ")[1]
         if not peer.check_if_file_exist(file):
             t = threading.Thread(target=ask_peers, args=(file,))
