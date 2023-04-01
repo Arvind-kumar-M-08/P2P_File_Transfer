@@ -72,8 +72,8 @@ def ask_peers(file):
         for chunk in peer.received_file:
             if chunk in chunks_wanted:
                 chunks_wanted.remove(chunk)
-    
-    peer.add_file_to_folder(file)
+    if len(peer.received_file):
+        peer.add_file_to_folder(file)
 
 t1 = threading.Thread(target=update_peer)
 t1.start()
@@ -89,7 +89,7 @@ while True:
         os._exit(0)
         break
     
-    if action.split(" ")[0].lower() == "ask":
+    if action.split(" ")[0].lower() == "nned":
         file = action.split(" ")[1]
         if not peer.check_if_file_exist(file):
             t = threading.Thread(target=ask_peers, args=(file,))
