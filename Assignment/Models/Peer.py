@@ -16,6 +16,8 @@ class Peer:
         print("Peer started")
 
         #data for file request
+        self.received_file = {}
+        self.file_size = 0
         self.file_chunk = []
         self.folder = folder
 
@@ -47,6 +49,7 @@ class Peer:
             
             #Asking file chunk
             if message[0] == "NEED":
+                print(message)
                 sending = ""
                 if self.check_if_file_exist(message[1]):
                     sending = "YES " + str((os.path.getsize(self.folder + message[1]) + 1023)//1024)
@@ -55,7 +58,22 @@ class Peer:
                     sending = "NO"
                 
                 c.send(sending.encode())
+            if message[0] == "SEND":
+                print(message)
+                if self.check_if_file_exist(message[1]):
+                    sending = self.get_chunk_from_file(message[1], int(message[2]))
+                
+                if len(sending):
+                    c.send(sending)
             c.close()
+    
+    def get_chunk_from_file(self, file, chunk_no):
+        f = open(self.folder + file, "rb")
+        _ = f.read(1024*chunk_no)
+        message = f.read(1024)
+        if not message:
+            return ""
+        return message
 
     def ask_a_peer(self, file, port_no):
         self.file_chunk= []
@@ -68,10 +86,32 @@ class Peer:
 
         #YES
         if message[0] == "YES":
+            self.file_size = int(message[1])
             self.file_chunk.append(port_no)
         
         temps.close()
+    
+    def request_chunk(self, file, port_no, chunk_no):
+        temps = socket.socket()
+        temps.connect(('127.0.0.1', port_no))
+        temps.send(("SEND "+ file + " " + str(chunk_no)).encode())
+        message = temps.recv(1024)
+        # print(message)
+        # print("Received chunk for file : ", file," ",chunk_no)
+        self.received_file[chunk_no] = message
+        
+        temps.close()
 
+    def add_file_to_folder(self, file):
+        f = open(self.folder + file, "wb")
+        for i in range(self.file_size):
+            f.write(self.received_file[i])
+        f.close()
+
+        if os.path.isfile(self.folder + file):
+            print("Added ", file, " to the folder ", self.folder)
+        else:
+            print("Error in adding file : ", file)
     def check_if_file_exist(self, file):
         return os.path.isfile(self.folder + file)
     
