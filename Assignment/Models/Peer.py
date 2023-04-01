@@ -1,17 +1,19 @@
 import socket
 
 class Peer:
-    def __init__(self, server_port = 10000):
+    def __init__(self, port, server_port = 10000):
         # s is the server socekt object
         self.s = socket.socket()
         self.s.connect(('127.0.0.1', server_port))
         self.peer_list = []
 
+        #port for peer file transfer
+        self.port = port
         print("Peer started")
 
     def join(self):
         # sending HI for new peer
-        self.s.send("HI".encode())
+        self.s.send(("HI " + str(self.port)).encode())
 
     # always checking for active peers
     def update_peer(self):

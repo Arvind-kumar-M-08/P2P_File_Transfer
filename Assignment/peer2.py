@@ -2,7 +2,7 @@ from Models.Peer import Peer
 import threading
 import os
 
-peer = Peer()
+peer = Peer(10002)
 
 peer.join()
 

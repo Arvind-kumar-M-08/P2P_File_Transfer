@@ -19,9 +19,9 @@ class Manager:
     # Broadcasting peer list
     def send_peerlist(self):
         message = ""
-        for _, port in self.peer_list:
+        for _,_, port in self.peer_list:
             message += str(port) + ","
-        for conn, _ in self.peer_list:
+        for conn, _ ,_ in self.peer_list:
             try:
                 self.message_to_peer(conn, message)
             except:
