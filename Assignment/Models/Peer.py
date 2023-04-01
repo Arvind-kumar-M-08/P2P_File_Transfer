@@ -57,21 +57,6 @@ class Peer:
                 c.send(sending.encode())
             c.close()
 
-    def has_chunks(self, file):
-        chunk_index = 0
-        message = "YES "
-        with open(self.folder + file, 'rb') as f:
-            # Read the file in 1024-byte chunks
-            while True:
-                chunk = f.read(1024)
-                if not chunk:
-                    break
-                message += str(chunk_index) + ","
-                chunk_index += 1
-                # Process the chunk
-                # print(chunk)
-        return message[:-1]
-
     def ask_a_peer(self, file, port_no):
         self.file_chunk= []
         temps = socket.socket()
