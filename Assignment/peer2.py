@@ -50,5 +50,9 @@ while True:
         break
     
     if action.split(" ")[0].lower() == "ask":
-        t = threading.Thread(target=ask_peers, args=(action.split(" ")[1],))
-        t.start()
+        file = action.split(" ")[1]
+        if not peer.check_if_file_exist(file):
+            t = threading.Thread(target=ask_peers, args=(file,))
+            t.start()
+        else:
+            print("File already exists")

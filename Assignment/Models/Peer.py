@@ -55,9 +55,7 @@ class Peer:
         temps.close()
 
     def check_if_file_exist(self, file):
-        if file in os.path.isfile(self.folder + file):
-            return True
-        return False
+        return os.path.isfile(self.folder + file)
     
     def __del__(self):
         # Closing the connection
