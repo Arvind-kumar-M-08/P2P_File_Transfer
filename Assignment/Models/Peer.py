@@ -76,31 +76,38 @@ class Peer:
         return message
 
     def ask_a_peer(self, file, port_no):
-        self.file_chunk= []
-        temps = socket.socket()
-        temps.connect(('127.0.0.1', port_no))
-        temps.send(("NEED "+ file).encode())
-        message = temps.recv(1024).decode()
-        print(message)
-        message = message.split(" ")
+        try:
+            self.file_chunk= []
+            temps = socket.socket()
+            temps.connect(('127.0.0.1', port_no))
+            temps.send(("NEED "+ file).encode())
+            message = temps.recv(1024).decode()
+            print(message)
+            message = message.split(" ")
 
-        #YES
-        if message[0] == "YES":
-            self.file_size = int(message[1])
-            self.file_chunk.append(port_no)
-        
-        temps.close()
-    
+            #YES
+            if message[0] == "YES":
+                self.file_size = int(message[1])
+                self.file_chunk.append(port_no)
+            
+            temps.close()
+        except:
+            print("No peer found : ", port_no)
+
+            
     def request_chunk(self, file, port_no, chunk_no):
-        temps = socket.socket()
-        temps.connect(('127.0.0.1', port_no))
-        temps.send(("SEND "+ file + " " + str(chunk_no)).encode())
-        message = temps.recv(1024)
-        # print(message)
-        # print("Received chunk for file : ", file," ",chunk_no)
-        self.received_file[chunk_no] = message
-        
-        temps.close()
+        try:
+            temps = socket.socket()
+            temps.connect(('127.0.0.1', port_no))
+            temps.send(("SEND "+ file + " " + str(chunk_no)).encode())
+            message = temps.recv(1024)
+            # print(message)
+            # print("Received chunk for file : ", file," ",chunk_no)
+            self.received_file[chunk_no] = message
+            
+            temps.close()
+        except:
+            print("No peer found : ", port_no)
 
     def add_file_to_folder(self, file):
         f = open(self.folder + file, "wb")

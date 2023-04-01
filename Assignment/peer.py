@@ -1,7 +1,7 @@
 from Models.Peer import Peer
 import threading
 import os
-import time
+
 port_no = int(input("Enter port number : "))
 name = input("Peer number : ")
 
@@ -45,8 +45,6 @@ def ask_peers(file):
     print("------FILE CHUNKS------")
     print(peer.file_chunk)
     print("File chunks : ",peer.file_size)
-
-    time.sleep(3)
 
     chunks_wanted = [i for i in range(peer.file_size)]
     while len(chunks_wanted):
