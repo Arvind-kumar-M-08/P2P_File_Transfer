@@ -11,7 +11,10 @@ class Manager:
         self.peer_list = []
 
         self.last_broadcasted = []
+        print("-------------------------------------")
         print("Server started at port: ", port)
+        print("Enter close or c to close the server")
+        print("-------------------------------------")
 
     def message_to_peer(self, conn, message):
         conn.send(message.encode())

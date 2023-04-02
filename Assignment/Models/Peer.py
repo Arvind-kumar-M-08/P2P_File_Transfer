@@ -30,12 +30,14 @@ class Peer:
         self.file_size = 0
         self.file_chunk = []
         
-        print("Peer started")
-        print("Use the following")
-        print("0 -> Requesting a file")
-        print("1 -> Shareable files")
-        print("2 -> List of active peers")
-        print("3 -> Exit")
+        print("\t\t---------------------------")
+        print("\t\tPeer started")
+        print("\t\tUse the following")
+        print("\t\t1 -> Requesting a file")
+        print("\t\t2 -> Shareable files")
+        print("\t\t3 -> List of active peers")
+        print("\t\t4 -> Exit")
+        print("\t\t---------------------------")
 
     def join(self):
         # sending HI for new peer
