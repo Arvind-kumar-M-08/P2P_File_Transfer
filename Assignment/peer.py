@@ -82,9 +82,10 @@ t2.start()
 
 while True:
     action = int(input("Enter a action (0, 1, 2, 3) : "))
-
+    print("\n")
     if action == 0:
         file = input("Enter a file name : ")
+        print("\n")
         if not peer.check_if_file_exist(file):
             t = threading.Thread(target=ask_peers, args=(file,))
             t.start()
@@ -94,13 +95,14 @@ while True:
     
     elif action == 1:
         print("List of shareable files")
-        print(peer.shareable_files)
+        for file in peer.shareable_files:
+            print(file, sep="\t")
 
     elif action == 2:
         print("List of active peers")
-        print("IP\t\t\tPort")
+        print("\tIP\t\t\tPort")
         for p in peer.peer_list:
-            print(p[0],"\t\t",p[1])
+            print("\t",p[0],"\t\t",p[1])
     
     elif action == 3:
         print("Closing peer")
@@ -110,3 +112,5 @@ while True:
 
     else:
         print("Enter a valid action (0, 1, 2, 3)")
+
+    print("\n")
