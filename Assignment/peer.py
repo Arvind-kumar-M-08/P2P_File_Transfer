@@ -3,10 +3,16 @@ import os
 import threading
 from Models.Peer import Peer
 
-port_no = int(input("Enter port number : "))
-name = input("Peer number : ")
+is_connected = False
+while not is_connected:
+    try:
+        port_no = int(input("Enter port number : "))
+        name = input("Peer number : ")
 
-peer = Peer(port_no, "peer" + name + "/")
+        peer = Peer(port_no, "peer" + name + "/")
+        is_connected = True
+    except:
+        print("Error while creating peer")
 
 peer.join()
 
