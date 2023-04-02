@@ -45,7 +45,7 @@ def remove_peer(addr):
     Removes a peer from the lists and broadcasts
 
     Args:
-        addr (tuple(int, int)) : (ip address, portno)
+        addr (tuple(str, int)) : (ip address, portno)
     """
     for peer in manager.peer_list:
         if peer[1] == addr:

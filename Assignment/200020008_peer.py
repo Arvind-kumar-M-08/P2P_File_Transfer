@@ -11,7 +11,7 @@ while not is_connected:
 
         peer = Peer(port_no, "peer" + name + "/")
         is_connected = True
-    except:
+    except Exception:
         print("Error while creating peer")
 
 peer.join()
@@ -19,19 +19,48 @@ peer.join()
 stop_flag = threading.Event()
 
 def update_peer():
+    """
+    Update active peer list when manager broadcasts
+    """
     while not stop_flag.is_set():
         peer.update_peer();
 
 def listen_to_peers():
+    """
+    Listen to other peers' request in a particular port
+    """
     peer.listen_to_peers()
 
 def ask_a_peer(file, otherPeer):
+    """
+    Asks if the peer has that file
+
+    Args:
+        file (str) : filename
+        other_peer (tuple(str, int)) : (ip address, portno)
+    """
     peer.ask_a_peer(file, otherPeer)
 
 def request_chunk(file, other_peer, chunk_no):
+    """
+    Request the required chunk to a selected peer
+
+    Args:
+        file (str) : filename
+        other_peer (tuple(str, int)) : (ip address, portno)
+        chunk_no (int) : index of the chunk
+    """
     peer.request_chunk(file, other_peer, chunk_no)
 
 def ask_peers(file):
+    """
+    Ask all the active peers for file availability and fetches the file. 
+    Changes the peer if one peer goes offline.
+    Adds the received file to folder.
+
+    Args:
+        file (str) : filename
+    """
     peer.file_chunk = []
     peer.file_size = 0
     peer.received_file = {}

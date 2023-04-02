@@ -15,22 +15,13 @@ class Manager:
         A list of tuples representing the connected peers. Each tuple contains a connection object, 
         the IP address and port number of the peer.
     last_broadcasted : list
-        A copy of the last broadcasted peer list.
-
-    Methods:
-    --------
-    __init__(self, port):
-        Initializes the server socket object, binds it to the given port, and starts listening for connections.
-    message_to_peer(self, conn, message):
-        Sends the given message to the peer over the given connection.
-    send_peerlist(self):
-        Broadcasts the current list of connected peers to all connected peers.
-    __del__(self):
-        Closes the server socket object and prints a message indicating that the server has been closed.
+        A copy of the last broadcasted peer list.        
     """
 
     def __init__(self, port):
-        # s is the server socekt object
+        """
+        Initializes the server socket object, binds it to the given port, and starts listening for connections.
+        """
         self.s = socket.socket()
         self.s.bind(('', port))
         self.s.listen(100)
@@ -70,5 +61,8 @@ class Manager:
                 print("Error while sending message to ", cur_port)
                 
     def __del__(self):
+        """
+        Closes the server socket object and prints a message indicating that the server has been closed.
+        """
         self.s.close()
         print("Server closed")
