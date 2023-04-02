@@ -31,7 +31,11 @@ class Peer:
         self.file_chunk = []
         
         print("Peer started")
-        print("Enter required file name")
+        print("Use the following")
+        print("0 -> Requesting a file")
+        print("1 -> Shareable files")
+        print("2 -> List of active peers")
+        print("3 -> Exit")
 
     def join(self):
         # sending HI for new peer
@@ -49,10 +53,8 @@ class Peer:
             self.peer_list = []
             for i in range(0, len(message), 2):
                 self.peer_list.append((message[i], int(message[i+1])))
-            print("Active Peers : ", self.peer_list)
 
     def leave(self):
-        print("Sending bye message")
         message = "BYE"
         self.s.send(message.encode())
 
@@ -64,7 +66,6 @@ class Peer:
             
             #Asking file chunk
             if message[0] == "NEED":
-                print(message)
                 sending = ""
                 if self.check_if_file_exist(message[1]):
                     sending = "YES " + str((os.path.getsize(self.folder + message[1]) + 1023)//1024)
@@ -74,7 +75,6 @@ class Peer:
                 
                 c.send(sending.encode())
             if message[0] == "SEND":
-                print(message)
                 if self.check_if_file_exist(message[1]):
                     sending = self.get_chunk_from_file(message[1], int(message[2]))
                 
@@ -97,7 +97,6 @@ class Peer:
             temps.connect((peer[0], peer[1]))
             temps.send(("NEED "+ file).encode())
             message = temps.recv(1024).decode()
-            print(message)
             message = message.split(" ")
 
             #YES
@@ -107,7 +106,7 @@ class Peer:
             
             temps.close()
         except:
-            print("No peer found : ", peer)
+            print("Peer connection error at : ", peer)
 
             
     def request_chunk(self, file, peer, chunk_no):
@@ -116,13 +115,11 @@ class Peer:
             temps.connect((peer[0], peer[1]))
             temps.send(("SEND "+ file + " " + str(chunk_no)).encode())
             message = temps.recv(1024)
-            # print(message)
-            # print("Received chunk for file : ", file," ",chunk_no)
             self.received_file[chunk_no] = message
             
             temps.close()
         except:
-            print("No peer found : ", peer)
+            print("Peer connection error at : ", peer)
 
     def add_file_to_folder(self, file):
         f = open(self.folder + file, "wb")
