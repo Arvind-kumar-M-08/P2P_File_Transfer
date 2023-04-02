@@ -81,36 +81,40 @@ t2 = threading.Thread(target=listen_to_peers)
 t2.start()
 
 while True:
-    action = int(input("Enter a action (0, 1, 2, 3) : "))
-    print("\n")
-    if action == 0:
-        file = input("Enter a file name : ")
+    try:
+        action = int(input("Enter a action (1, 2, 3, 4) : "))
         print("\n")
-        if not peer.check_if_file_exist(file):
-            t = threading.Thread(target=ask_peers, args=(file,))
-            t.start()
-            t.join()
+        if action == 1:
+            file = input("Enter a file name : ")
+            print("\n")
+            if not peer.check_if_file_exist(file):
+                t = threading.Thread(target=ask_peers, args=(file,))
+                t.start()
+                t.join()
+            else:
+                print("File already exists")
+        
+        elif action == 2:
+            print("List of shareable files")
+            for file in peer.shareable_files:
+                print(file, sep="\t")
+
+        elif action == 3:
+            print("List of active peers")
+            print("\tIP\t\t\tPort")
+            for p in peer.peer_list:
+                print("\t",p[0],"\t\t",p[1])
+        
+        elif action == 4:
+            print("Closing peer")
+            stop_flag.set()
+            peer.leave()
+            os._exit(0)
+
         else:
-            print("File already exists")
+            print("Enter a valid action (0, 1, 2, 3)")
+
+        print("\n")
     
-    elif action == 1:
-        print("List of shareable files")
-        for file in peer.shareable_files:
-            print(file, sep="\t")
-
-    elif action == 2:
-        print("List of active peers")
-        print("\tIP\t\t\tPort")
-        for p in peer.peer_list:
-            print("\t",p[0],"\t\t",p[1])
-    
-    elif action == 3:
-        print("Closing peer")
-        stop_flag.set()
-        peer.leave()
-        os._exit(0)
-
-    else:
-        print("Enter a valid action (0, 1, 2, 3)")
-
-    print("\n")
+    except ValueError:
+        print("\nEnter a valid action (0, 1, 2, 3)\n")

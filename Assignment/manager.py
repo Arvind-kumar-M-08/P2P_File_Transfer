@@ -88,7 +88,6 @@ def listen_for_connection():
         try:
             # Message is "Hi PeerPort"
             message = int(c.recv(1024).decode().split()[1])
-            print("Peer - peer port: ", message)
             print("New connection request from : ",addr)
             t = threading.Thread(target=new_peer, args=(c, addr, message,))
             t.start()    
