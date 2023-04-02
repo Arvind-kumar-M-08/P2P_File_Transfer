@@ -23,38 +23,35 @@ def update_peer_list(msg, peer):
         elif msg == "del":
             manager.peer_list.remove(peer)
 
-def new_peer(c, port_no, ppport):
-    update_peer_list("add", (c, port_no, ppport))
+def new_peer(c, addr, ppport):
+    update_peer_list("add", (c, addr, ppport))
     manager.send_peerlist()
 
     #Listening to connected peer
-    t = threading.Thread(target=listen_to_peer, args=(c, port_no))
+    t = threading.Thread(target=listen_to_peer, args=(c, addr))
     t.start()
 
-def remove_peer(port_no):
+def remove_peer(addr):
     for peer in manager.peer_list:
-        if peer[1] == port_no:
+        if peer[1] == addr:
             update_peer_list("del", peer)
             break
     manager.send_peerlist()
 
 #checking if peer is active
-def listen_to_peer(conn, port_no):
+def listen_to_peer(conn, addr):
     last_sent_time = time()
     is_alive_check = False
     while True:
-        temp = [peer[1] for peer in manager.peer_list]
-        print(temp)
-        print("Number of peers ", len(manager.peer_list))
         if time() - last_sent_time > 10 :
             is_alive_check = True
             last_sent_time = time()
-            print("Cheking alive for peer at : ", port_no)
+            print("Cheking alive for peer at : ", addr)
             try:
                 conn.send("ALIVE_CHECK".encode())
             except BrokenPipeError:
-                print("Peer dead at : ", port_no)
-                t = threading.Thread(target=remove_peer, args=(port_no,))
+                print("Peer dead at : ", addr)
+                t = threading.Thread(target=remove_peer, args=(addr,))
                 t.start()
                 t.join()
                 # manager.send_peerlist()
@@ -64,8 +61,8 @@ def listen_to_peer(conn, port_no):
             message = conn.recv(1024).decode()
 
             if message == "BYE":
-                print("Peer leaving at port : ", port_no)
-                t = threading.Thread(target=remove_peer, args=(port_no,))
+                print("Peer leaving at port : ", addr)
+                t = threading.Thread(target=remove_peer, args=(addr,))
                 t.start()
                 t.join()
                 return
@@ -74,10 +71,9 @@ def listen_to_peer(conn, port_no):
                 is_alive_check = False
                 continue
         except:
-            print("is check alive ", is_alive_check)
             if is_alive_check:
-                print("Peer dead at : ", port_no)
-                t = threading.Thread(target=remove_peer, args=(port_no,))
+                print("Peer dead at : ", addr)
+                t = threading.Thread(target=remove_peer, args=(addr,))
                 t.start()
                 t.join()
                 return
@@ -88,16 +84,15 @@ def listen_to_peer(conn, port_no):
 def listen_for_connection():
     while True:
         c, addr = manager.s.accept() 
-        print("Conncetion from ", addr[1])
         try:
+            # Message is "Hi PeerPort"
             message = int(c.recv(1024).decode().split()[1])
             print("Peer - peer port: ", message)
-            #New peer
-            print("New connection request from port : ",addr[1])
-            t = threading.Thread(target=new_peer, args=(c, addr[1], message,))
+            print("New connection request from : ",addr)
+            t = threading.Thread(target=new_peer, args=(c, addr, message,))
             t.start()    
         except:
-            print("Error while adding peer")
+            print("Error while adding new peer")
 
 
 def is_active_peers_changed():

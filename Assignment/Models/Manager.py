@@ -11,22 +11,20 @@ class Manager:
         self.peer_list = []
         print("Server started at port: ", port)
 
-    def message_from_peer(self):
-        pass
-
     def message_to_peer(self, conn, message):
         conn.send(message.encode())
 
     # Broadcasting peer list
     def send_peerlist(self):
         message = ""
-        for _,_, port in self.peer_list:
-            message += str(port) + ","
-        for conn, _ ,_ in self.peer_list:
+        for _, cur_port, peer_port in self.peer_list:
+            message += cur_port[0] + ","
+            message += str(peer_port) + ","
+        for conn, cur_port ,_ in self.peer_list:
             try:
                 self.message_to_peer(conn, message)
             except:
-                pass
+                print("Error while sending message to ", cur_port)
                 
     def __del__(self):
         # self.s.shutdown()
