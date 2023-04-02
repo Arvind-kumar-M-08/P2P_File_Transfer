@@ -1,5 +1,6 @@
-import socket
+"""Peer Class for peer-peer application"""
 import os
+import socket
 
 class Peer:
     def __init__(self, port, folder, server_port = 10000):

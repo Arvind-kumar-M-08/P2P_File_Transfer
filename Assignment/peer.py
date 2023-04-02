@@ -1,6 +1,7 @@
-from Models.Peer import Peer
-import threading
+"""Module providingFunction for peer in peer-peer application"""
 import os
+import threading
+from Models.Peer import Peer
 
 port_no = int(input("Enter port number : "))
 name = input("Peer number : ")

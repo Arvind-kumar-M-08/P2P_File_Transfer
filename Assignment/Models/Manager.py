@@ -1,3 +1,4 @@
+"""Manager Class for peer-peer application"""
 import socket
 
 class Manager:

@@ -1,8 +1,8 @@
-from Models.Manager import Manager
-import threading
-import subprocess
-from time import sleep, time
+"""Module providingFunction for manager in peer-peer application"""
 import os
+import threading
+from time import time
+from Models.Manager import Manager
 
 manager = Manager(10000)
 
