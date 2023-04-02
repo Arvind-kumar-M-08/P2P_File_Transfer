@@ -9,8 +9,14 @@ manager = Manager(10000)
 # Lock for updating peer list
 lock = threading.Lock()
 
+
 def update_peer_list(msg, peer):
-    print(msg, " peer list atomically")
+    """
+    Updates the active peer list in manager
+
+    Args:
+        msg (str): addtion or deletion
+    """
     with lock:
         if msg == "add":
             manager.peer_list.append(peer)
@@ -18,7 +24,6 @@ def update_peer_list(msg, peer):
             manager.peer_list.remove(peer)
 
 def new_peer(c, port_no, ppport):
-    # manager.add_peer(c, port_no)
     update_peer_list("add", (c, port_no, ppport))
     manager.send_peerlist()
 
