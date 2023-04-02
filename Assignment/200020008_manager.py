@@ -106,7 +106,7 @@ def listen_to_peer(conn, addr):
 
 def listen_for_connection():
     """
-    Listens to a particular port for new incoming peer connection
+    Listens to a particular port for new incoming peer connection in  a thread
     """
     while True:
         c, addr = manager.s.accept() 
@@ -123,6 +123,9 @@ def listen_for_connection():
 
 
 def is_active_peers_changed():
+    """
+    Periodically checks if the peer list is changed and broadcasts.
+    """
     last_checked_time = time()
     while True:
         if time() - last_checked_time > 5:

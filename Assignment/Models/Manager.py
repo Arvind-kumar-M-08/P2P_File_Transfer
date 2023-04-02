@@ -2,6 +2,33 @@
 import socket
 
 class Manager:
+    """
+    A class that defines a server that listens for incoming connections from peers and keeps track of them.
+
+    Attributes:
+    -----------
+    s : socket.socket
+        The server socket object.
+    port : int
+        The port on which the server is listening.
+    peer_list : list
+        A list of tuples representing the connected peers. Each tuple contains a connection object, 
+        the IP address and port number of the peer.
+    last_broadcasted : list
+        A copy of the last broadcasted peer list.
+
+    Methods:
+    --------
+    __init__(self, port):
+        Initializes the server socket object, binds it to the given port, and starts listening for connections.
+    message_to_peer(self, conn, message):
+        Sends the given message to the peer over the given connection.
+    send_peerlist(self):
+        Broadcasts the current list of connected peers to all connected peers.
+    __del__(self):
+        Closes the server socket object and prints a message indicating that the server has been closed.
+    """
+
     def __init__(self, port):
         # s is the server socekt object
         self.s = socket.socket()
@@ -17,10 +44,20 @@ class Manager:
         print("-------------------------------------")
 
     def message_to_peer(self, conn, message):
+        """
+        Sends the given message to the peer over the given connection.
+
+        Args:
+            conn (socket connection obj): socket connection object of peer
+            message (str): message to be sent
+        """
         conn.send(message.encode())
 
     # Broadcasting peer list
     def send_peerlist(self):
+        """
+        Broadcasts the current list of connected peers to all connected peers.
+        """
         self.last_broadcasted = list(self.peer_list)
         message = ""
         for _, cur, peer_port in self.peer_list:
@@ -29,10 +66,9 @@ class Manager:
         for conn, cur_port ,_ in self.peer_list:
             try:
                 self.message_to_peer(conn, message)
-            except:
+            except (ConnectionResetError, ConnectionAbortedError, TimeoutError):
                 print("Error while sending message to ", cur_port)
                 
     def __del__(self):
-        # self.s.shutdown()
         self.s.close()
         print("Server closed")
