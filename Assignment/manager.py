@@ -117,8 +117,7 @@ t2 = threading.Thread(target=listen_for_connection)
 t2.start()
 
 while True:
-    action = input("INPUT : ")
+    action = input()
     if action.lower() == "close" or action.lower() == "c":
         print("Closing Manager")
         os._exit(0)
-

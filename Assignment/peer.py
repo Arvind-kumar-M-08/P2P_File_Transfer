@@ -83,19 +83,17 @@ t2 = threading.Thread(target=listen_to_peers)
 t2.start()
 
 while True:
-    action = input("INPUT : ")
+    action = input()
     if action.lower() == "close" or action.lower() == "c":
         print("Closing peer")
         stop_flag.set()
         peer.leave()
         os._exit(0)
-        break
     
+    file = action.split(" ")[0]
+    if not peer.check_if_file_exist(file):
+        t = threading.Thread(target=ask_peers, args=(file,))
+        t.start()
+        t.join()
     else:
-        file = action.split(" ")[0]
-        if not peer.check_if_file_exist(file):
-            t = threading.Thread(target=ask_peers, args=(file,))
-            t.start()
-            t.join()
-        else:
-            print("File already exists")
+        print("File already exists")
