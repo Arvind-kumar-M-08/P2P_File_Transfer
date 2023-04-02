@@ -1,5 +1,6 @@
 """Module providingFunction for manager in peer-peer application"""
 import os
+import socket
 import threading
 from time import time
 from Models.Manager import Manager
@@ -24,6 +25,14 @@ def update_peer_list(msg, peer):
             manager.peer_list.remove(peer)
 
 def new_peer(c, addr, ppport):
+    """
+    Adds new peer to the list, broadcasts to all peers and starts listening to new peer
+
+    Args:
+        c (socket connection obj): socket connection object of peer
+        addr (tuple(int, int)) : (ip address, portno)
+        ppport (int) : port number for peer-peer connection
+    """
     update_peer_list("add", (c, addr, ppport))
     manager.send_peerlist()
 
@@ -32,6 +41,12 @@ def new_peer(c, addr, ppport):
     t.start()
 
 def remove_peer(addr):
+    """
+    Removes a peer from the lists and broadcasts
+
+    Args:
+        addr (tuple(int, int)) : (ip address, portno)
+    """
     for peer in manager.peer_list:
         if peer[1] == addr:
             update_peer_list("del", peer)
@@ -40,6 +55,13 @@ def remove_peer(addr):
 
 #checking if peer is active
 def listen_to_peer(conn, addr):
+    """
+    Listens to a peer in a separate thread. Periodically checks if a peer is alive or dead.
+
+    Args:
+        conn (socket connection obj): socket connection object of peer
+        addr (tuple(int, int)) : (ip address, portno)
+    """
     last_sent_time = time()
     is_alive_check = False
     while True:
@@ -71,7 +93,7 @@ def listen_to_peer(conn, addr):
             if message == "OK":
                 is_alive_check = False
                 continue
-        except:
+        except (socket.timeout, BrokenPipeError):
             if is_alive_check:
                 print("Peer dead at : ", addr)
                 t = threading.Thread(target=remove_peer, args=(addr,))
@@ -83,6 +105,9 @@ def listen_to_peer(conn, addr):
 
 
 def listen_for_connection():
+    """
+    Listens to a particular port for new incoming peer connection
+    """
     while True:
         c, addr = manager.s.accept() 
         try:
@@ -91,8 +116,10 @@ def listen_for_connection():
             print("New connection request from : ",addr)
             t = threading.Thread(target=new_peer, args=(c, addr, message,))
             t.start()    
-        except:
+        except (socket.error, OSError, ValueError, IndexError):
             print("Error while adding new peer")
+        except Exception as exp:
+            print("Error while adding new peer : ", str(exp))
 
 
 def is_active_peers_changed():
