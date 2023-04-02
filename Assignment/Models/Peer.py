@@ -3,28 +3,35 @@ import os
 import socket
 
 class Peer:
-    def __init__(self, port, folder, server_port = 10000):
+    def __init__(self, port, folder, server_ip = '127.0.0.1' ,server_port = 10000):
         # s is the server socekt object
         self.s = socket.socket()
         self.ip = socket.gethostbyname(socket.gethostname())
-        self.s.connect((self.ip, server_port))
+        self.s.connect((server_ip, server_port))
 
         # list of tuple (ip, port)
         self.peer_list = []
         self.folder = folder
 
+        if not os.path.isdir(self.folder):
+            os.mkdir(self.folder)
+
+        #List of shareable files
+        self.shareable_files = os.listdir(self.folder)
+
         #port for peer file transfer
         self.port = port
-        self.peerSocket = socket.socket()
-        self.peerSocket.bind(('', port))
-        self.peerSocket.listen(100)
-        print("Peer started")
+        self.peer_socket = socket.socket()
+        self.peer_socket.bind(('', port))
+        self.peer_socket.listen(100)
 
         #data for file request
         self.received_file = {}
         self.file_size = 0
         self.file_chunk = []
         
+        print("Peer started")
+        print("Enter required file name")
 
     def join(self):
         # sending HI for new peer
@@ -51,7 +58,7 @@ class Peer:
 
     def listen_to_peers(self):
         while True:
-            c, addr = self.peerSocket.accept()
+            c, addr = self.peer_socket.accept()
             message = c.recv(1024).decode()
             message = message.split(" ")
             
@@ -124,12 +131,13 @@ class Peer:
         f.close()
 
         if os.path.isfile(self.folder + file):
+            self.shareable_files.append(file)
             print("Added ", file, " to the folder ", self.folder)
         else:
             print("Error in adding file : ", file)
         
     def check_if_file_exist(self, file):
-        return os.path.isfile(self.folder + file)
+        return file in self.shareable_files
     
     def __del__(self):
         # Closing the connection
