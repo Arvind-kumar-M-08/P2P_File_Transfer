@@ -43,6 +43,7 @@ def listen_to_peer(conn, addr):
     last_sent_time = time()
     is_alive_check = False
     while True:
+
         if time() - last_sent_time > 10 :
             is_alive_check = True
             last_sent_time = time()

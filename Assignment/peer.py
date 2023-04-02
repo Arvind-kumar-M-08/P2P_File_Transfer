@@ -21,11 +21,11 @@ def update_peer():
 def listen_to_peers():
     peer.listen_to_peers()
 
-def ask_a_peer(file, port_no):
-    peer.ask_a_peer(file, port_no)
+def ask_a_peer(file, otherPeer):
+    peer.ask_a_peer(file, otherPeer)
 
-def request_chunk(file, port_no, chunk_no):
-    peer.request_chunk(file, port_no, chunk_no)
+def request_chunk(file, other_peer, chunk_no):
+    peer.request_chunk(file, other_peer, chunk_no)
 
 def ask_peers(file):
     print("Request for file : ", file)
@@ -34,7 +34,7 @@ def ask_peers(file):
     peer.received_file = {}
     threads = []
     for p in peer.peer_list:
-        if p != peer.port:
+        if p[1] != peer.port or p[0] != peer.ip:
             t = threading.Thread(target=ask_a_peer, args=(file, p,))
             t.start()
             threads.append(t)
@@ -45,9 +45,9 @@ def ask_peers(file):
 
     print("------FILE CHUNKS------")
     print(peer.file_chunk)
-    print("File chunks : ",peer.file_size)
+    print("Number of chunks : ",peer.file_size)
 
-    chunks_wanted = [i for i in range(peer.file_size)]
+    chunks_wanted = list(range(peer.file_size))
     while len(chunks_wanted):
         index = 0
         peer_found = False
@@ -73,6 +73,7 @@ def ask_peers(file):
         for chunk in peer.received_file:
             if chunk in chunks_wanted:
                 chunks_wanted.remove(chunk)
+
     if len(peer.received_file):
         peer.add_file_to_folder(file)
 
@@ -90,10 +91,11 @@ while True:
         os._exit(0)
         break
     
-    if action.split(" ")[0].lower() == "need":
-        file = action.split(" ")[1]
+    else:
+        file = action.split(" ")[0]
         if not peer.check_if_file_exist(file):
             t = threading.Thread(target=ask_peers, args=(file,))
             t.start()
+            t.join()
         else:
             print("File already exists")

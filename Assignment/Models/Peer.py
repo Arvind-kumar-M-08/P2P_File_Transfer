@@ -6,8 +6,12 @@ class Peer:
     def __init__(self, port, folder, server_port = 10000):
         # s is the server socekt object
         self.s = socket.socket()
-        self.s.connect(('127.0.0.1', server_port))
+        self.ip = socket.gethostbyname(socket.gethostname())
+        self.s.connect((self.ip, server_port))
+
+        # list of tuple (ip, port)
         self.peer_list = []
+        self.folder = folder
 
         #port for peer file transfer
         self.port = port
@@ -20,7 +24,7 @@ class Peer:
         self.received_file = {}
         self.file_size = 0
         self.file_chunk = []
-        self.folder = folder
+        
 
     def join(self):
         # sending HI for new peer
@@ -35,8 +39,11 @@ class Peer:
                 return
             message = message[:-1]
             message = message.split(',')
-            self.peer_list = [int(i) for i in message]
-            print(self.peer_list)
+            self.peer_list = []
+            for i in range(0, len(message), 2):
+                self.peer_list.append((message[i], int(message[i+1])))
+            print("Active Peers : ", self.peer_list)
+
     def leave(self):
         print("Sending bye message")
         message = "BYE"
@@ -70,17 +77,17 @@ class Peer:
     
     def get_chunk_from_file(self, file, chunk_no):
         f = open(self.folder + file, "rb")
-        _ = f.read(1024*chunk_no)
+        useless = f.read(1024*chunk_no)
         message = f.read(1024)
         if not message:
             return ""
         return message
 
-    def ask_a_peer(self, file, port_no):
+    def ask_a_peer(self, file, peer):
         try:
             self.file_chunk= []
             temps = socket.socket()
-            temps.connect(('127.0.0.1', port_no))
+            temps.connect((peer[0], peer[1]))
             temps.send(("NEED "+ file).encode())
             message = temps.recv(1024).decode()
             print(message)
@@ -89,17 +96,17 @@ class Peer:
             #YES
             if message[0] == "YES":
                 self.file_size = int(message[1])
-                self.file_chunk.append(port_no)
+                self.file_chunk.append(peer)
             
             temps.close()
         except:
-            print("No peer found : ", port_no)
+            print("No peer found : ", peer)
 
             
-    def request_chunk(self, file, port_no, chunk_no):
+    def request_chunk(self, file, peer, chunk_no):
         try:
             temps = socket.socket()
-            temps.connect(('127.0.0.1', port_no))
+            temps.connect((peer[0], peer[1]))
             temps.send(("SEND "+ file + " " + str(chunk_no)).encode())
             message = temps.recv(1024)
             # print(message)
@@ -108,7 +115,7 @@ class Peer:
             
             temps.close()
         except:
-            print("No peer found : ", port_no)
+            print("No peer found : ", peer)
 
     def add_file_to_folder(self, file):
         f = open(self.folder + file, "wb")
@@ -120,6 +127,7 @@ class Peer:
             print("Added ", file, " to the folder ", self.folder)
         else:
             print("Error in adding file : ", file)
+        
     def check_if_file_exist(self, file):
         return os.path.isfile(self.folder + file)
     
