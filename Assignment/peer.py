@@ -46,7 +46,7 @@ def ask_peers(file):
     print(peer.file_chunk)
     
     chunks_wanted = list(range(peer.file_size))
-    while len(chunks_wanted):
+    while len(chunks_wanted) and len(peer.file_chunk):
         index = 0
         peer_found = False
         threads = []
