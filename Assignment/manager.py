@@ -98,16 +98,13 @@ def listen_for_connection():
 
 def is_active_peers_changed():
     last_checked_time = time()
-    old = [peer[1] for peer in manager.peer_list]
     while True:
         if time() - last_checked_time > 5:
-            print("Checking if peers changed")
+            old = [peer[1] for peer in manager.last_broadcasted]
             new  = [peer[1] for peer in manager.peer_list]
-
-            if not sorted(old) == sorted(new):
+            if sorted(old) != sorted(new):
                 print("Peers changed : Broadcasting")
                 manager.send_peerlist()
-                old = new
             last_checked_time = time()
 
 

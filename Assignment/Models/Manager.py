@@ -9,6 +9,8 @@ class Manager:
         self.s.listen(100)
         self.port = port
         self.peer_list = []
+
+        self.last_broadcasted = []
         print("Server started at port: ", port)
 
     def message_to_peer(self, conn, message):
@@ -16,9 +18,10 @@ class Manager:
 
     # Broadcasting peer list
     def send_peerlist(self):
+        self.last_broadcasted = list(self.peer_list)
         message = ""
-        for _, cur_port, peer_port in self.peer_list:
-            message += cur_port[0] + ","
+        for _, cur, peer_port in self.peer_list:
+            message += cur[0] + ","
             message += str(peer_port) + ","
         for conn, cur_port ,_ in self.peer_list:
             try:
